@@ -2,33 +2,23 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main  # 监听 main 分支的推送
+    branches: [main]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Deploy to GitHub Pages
+      - name: Install Dependencies
+        run: npm install  # 如果是静态站点生成器（如 Jekyll/Hexo）
+
+      - name: Build
+        run: npm run build  # 生成静态文件到 `public/` 或 `dist/`
+
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # 直接部署根目录所有文件
-
-
-          jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:  # 添加权限配置
-      contents: write
-    steps:
-      # ...其他步骤...
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # 必须使用此 Token
-          publish_dir: ./dist
-          force_orphan: true  # 强制清空 gh-pages 分支历史
+          publish_dir: ./public  # 替换为你的构建输出目录
