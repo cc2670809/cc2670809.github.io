@@ -2,25 +2,17 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]  # 只在 main 分支推送时触发
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install  # 如果是静态站点生成器（如 Jekyll/Hexo）
-
-      - name: Build static files
-        run: npm run build  # 生成静态文件到默认目录（如 public/）
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用内置 Token
-          publish_dir: ./public  # 必须与构建输出目录一致
-          force_orphan: true     # 强制清理历史提交
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # 直接发布仓库根目录下的文件
