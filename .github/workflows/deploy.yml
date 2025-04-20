@@ -7,13 +7,13 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # 使用 GitHub 的 Ubuntu 虚拟机环境
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # 拉取你的代码到虚拟机
+        uses: actions/checkout@v4
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3  # 使用官方部署插件
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # 自动生成的权限 Token
-          publish_dir: ./  # 部署根目录下的所有文件
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # 直接部署根目录所有文件
