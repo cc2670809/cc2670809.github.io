@@ -1,18 +1,47 @@
+
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main]  # 触发分支
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  build-and-deploy:
+    runs-on: ubuntu-latest  # 运行环境
 
-      - name: Deploy to GitHub Pages
+    steps:
+      # 1. 拉取代码
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 必须！获取完整提交历史
+
+      # 2. 设置 Node.js 环境（如果不需要构建可删除此步骤）
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20  # 指定你的 Node 版本
+          cache: 'npm'      # 缓存 npm 依赖
+
+      # 3. 安装依赖（如果不需要构建可删除此步骤）
+      - name: Install dependencies
+        run: npm ci  # 比 npm install 更严格，适合 CI/CD
+
+      # 4. 构建静态文件（如果不需要构建可删除此步骤）
+      - name: Build project
+        run: npm run build  # 确保生成到 public/ 或 dist/
+
+      # 5. 部署到 GitHub Pages
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # 直接发布仓库根目录下的文件
+          # 核心配置
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # 自动注入的 Token
+          publish_dir: ./public                      # 构建输出目录
+          
+          # 高级配置
+          force_orphan: true        # 强制清空 gh-pages 分支历史
+          keep_files: false         # 不保留旧文件
+          user_name: "github-actions[bot]"          # 提交者信息
+          user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_message: "Deploy via GitHub Actions"  # 自定义提交信息
